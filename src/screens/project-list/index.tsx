@@ -1,19 +1,14 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-// import * as qs from 'qs';
-import { cleanObject, useDebounce, useMount } from 'utils';
+import { useState } from 'react';
+import { useDebounce } from 'utils';
 import { List } from './list';
 import { SearchPanel } from './search-panel';
-import { useHttp } from 'utils/http';
 import styled from '@emotion/styled';
-
-
-// const apiUrl=process.env.REACT_APP_API_URL
+import { Typography } from 'antd';
+import { useProjects } from 'utils/project';
+import { useUsers } from 'utils/user';
 
 export const ProjectListScreen=()=>{
-    //负责人
-    const [users, setUsers] = useState([]);
-
     //当用户输入关键词或者选择select框的时候，param变
     const [param, setParam] = useState({
         name:"",
@@ -22,27 +17,15 @@ export const ProjectListScreen=()=>{
 
     const debounceParam=useDebounce(param,200);
 
-    //状态
-    const [list, setList]=useState([]);
+    const {isLoading,error,data:list}=useProjects(debounceParam);
 
-    const client=useHttp();
-
-    //搜索的时候去请求数据,获取list值
-    useEffect(() => {
-      client('projects',{data:cleanObject(debounceParam)}).then(setList)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debounceParam]) //当param变化的时候去请求
-
-    //初始化users
-    useMount(()=>{
-      client('users').then(setUsers)
-    })
-
+    const {data:users}=useUsers();
   return (
     <Container>
       <h1>项目列表</h1>
-      <SearchPanel users={users} param={param} setParam={setParam} />
-      <List users={users} list={list} />
+      <SearchPanel users={users || []} param={param} setParam={setParam} />
+      {error?<Typography.Text type={'danger'}>{error.message}</Typography.Text>:null}
+      <List loading={isLoading} users={users || []} dataSource={list || []} />
     </Container>
   );
 }
