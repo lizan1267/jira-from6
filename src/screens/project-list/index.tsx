@@ -30,6 +30,7 @@ export const ProjectListScreen=()=>{
     //搜索的时候去请求数据,获取list值
     useEffect(() => {
       client('projects',{data:cleanObject(debounceParam)}).then(setList)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debounceParam]) //当param变化的时候去请求
 
     //初始化users
