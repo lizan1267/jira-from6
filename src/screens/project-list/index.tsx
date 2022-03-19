@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { useDebounce } from 'utils';
+import { useDebounce, useDocumentTitle } from 'utils';
 import { List } from './list';
 import { SearchPanel } from './search-panel';
 import styled from '@emotion/styled';
@@ -20,6 +20,10 @@ export const ProjectListScreen=()=>{
     const {isLoading,error,data:list}=useProjects(debounceParam);
 
     const {data:users}=useUsers();
+
+    // false就是说，在我离开这个页面之后，把标题还原为原来的标题
+    useDocumentTitle('项目列表',false);
+
   return (
     <Container>
       <h1>项目列表</h1>

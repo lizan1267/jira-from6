@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 //专门判断0的
 export const isFalsy=(value:unknown)=>value === 0 ? false : !value ;
@@ -56,4 +56,25 @@ export const useDebounce=<V>(value:V,delay?:number)=>{
     },[value,delay]); 
 
     return debounceValue;
+}
+
+// 自定义hook改变文档标题
+export const useDocumentTitle=(title:string,keepOnUnmount:boolean=true)=>{
+    const oldTitle=useRef(document.title).current;
+    //页面加载时：旧title
+    //加载后：新title
+
+    useEffect(()=>{
+        document.title=title;
+    },[title])
+
+    useEffect(()=>{
+        //在页面卸载时被调用
+        return ()=>{
+            if(!keepOnUnmount){
+                //如果不指定依赖，读到的就是旧title
+                document.title=oldTitle;
+            }
+        }
+    },[keepOnUnmount,oldTitle])
 }
